@@ -1,445 +1,1061 @@
 <!doctype html>
 <html lang="pt-BR">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#11131f" />
-  <meta name="description" content="Compartilhe sua tela com amigos enquanto mantém a call no Discord. Conheça o Viewcord." />
-  <title>Viewcord — Sua tela, junto da sua call</title>
-  <style>
-    :root {
-      color-scheme: dark;
-      --bg: #11131f;
-      --bg-deep: #0b0d16;
-      --panel: #191c2b;
-      --panel-light: #202438;
-      --line: rgba(188, 197, 255, .12);
-      --text: #f4f5ff;
-      --muted: #a6acc4;
-      --blue: #5865f2;
-      --blue-bright: #7383ff;
-      --blue-pale: #dce1ff;
-      --pink: #b56cff;
-      --green: #57e39b;
-      --radius: 22px;
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#11131f" />
+    <meta
+      name="description"
+      content="Compartilhe sua tela com amigos enquanto mantém a call no Discord. Conheça o Viewcord."
+    />
+    <link rel="icon" type="image/png" href="/viewcord_logo.png" />
+    <link rel="apple-touch-icon" href="/viewcord_logo.png" />
+    <title>Viewcord</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #11131f;
+        --bg-deep: #0b0d16;
+        --panel: #191c2b;
+        --panel-light: #202438;
+        --line: rgba(188, 197, 255, 0.12);
+        --text: #f4f5ff;
+        --muted: #a6acc4;
+        --blue: #5865f2;
+        --blue-bright: #7383ff;
+        --blue-pale: #dce1ff;
+        --pink: #b56cff;
+        --green: #57e39b;
+        --radius: 22px;
+        font-family:
+          Inter,
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
+      }
 
-    * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
-    body {
-      margin: 0;
-      color: var(--text);
-      background:
-        radial-gradient(ellipse at 78% 8%, rgba(88, 101, 242, .15), transparent 35rem),
-        radial-gradient(ellipse at 5% 40%, rgba(111, 125, 255, .08), transparent 34rem),
-        var(--bg);
-      line-height: 1.6;
-    }
-    a { color: inherit; text-decoration: none; }
-    button { font: inherit; }
-    .container { width: min(1120px, calc(100% - 40px)); margin-inline: auto; }
-    .topbar {
-      position: sticky;
-      top: 0;
-      z-index: 20;
-      background: rgba(12, 14, 23, .78);
-      border-bottom: 1px solid rgba(188, 197, 255, .08);
-      backdrop-filter: blur(18px);
-    }
-    .nav {
-      min-height: 76px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 24px;
-    }
-    .brand { display: inline-flex; align-items: center; gap: 11px; font-weight: 800; letter-spacing: -.04em; font-size: 1.15rem; }
-    .brand img { width: 39px; height: 39px; object-fit: contain; border-radius: 50%; }
-    .nav-links { display: flex; align-items: center; gap: 30px; color: var(--muted); font-size: .91rem; font-weight: 600; }
-    .nav-links a:hover, .footer-links a:hover { color: white; }
-    .nav-cta, .button {
-      display: inline-flex;
-      justify-content: center;
-      align-items: center;
-      gap: 10px;
-      border: 1px solid transparent;
-      border-radius: 12px;
-      background: linear-gradient(135deg, #6574ff, #4d5be0);
-      color: white;
-      padding: 12px 19px;
-      font-weight: 750;
-      box-shadow: 0 9px 28px rgba(77, 91, 224, .24);
-      transition: transform .2s ease, filter .2s ease, box-shadow .2s ease;
-      cursor: pointer;
-    }
-    .nav-cta { padding: 10px 16px; border-radius: 11px; font-size: .9rem; }
-    .button:hover, .nav-cta:hover { transform: translateY(-2px); filter: brightness(1.08); box-shadow: 0 13px 34px rgba(77, 91, 224, .35); }
-    .button.secondary {
-      background: rgba(255, 255, 255, .045);
-      border-color: var(--line);
-      color: var(--text);
-      box-shadow: none;
-    }
-    .button.secondary:hover { background: rgba(255,255,255,.08); }
-    .hero { padding: 94px 0 90px; overflow: hidden; }
-    .hero-grid { display: grid; grid-template-columns: 1.02fr .98fr; gap: 54px; align-items: center; }
-    .eyebrow {
-      display: inline-flex; align-items: center; gap: 9px;
-      padding: 7px 12px; border: 1px solid rgba(158, 169, 255, .18);
-      background: rgba(88, 101, 242, .1); color: #dce0ff;
-      border-radius: 999px; font-size: .79rem; font-weight: 700;
-    }
-    .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); box-shadow: 0 0 12px rgba(87,227,155,.7); }
-    h1 { margin: 22px 0 18px; max-width: 680px; font-size: clamp(3rem, 6.5vw, 5.45rem); line-height: .99; letter-spacing: -.075em; }
-    .headline-accent {
-      color: transparent;
-      background: linear-gradient(105deg, #f8f9ff 5%, #bcc5ff 48%, #7888ff 100%);
-      -webkit-background-clip: text; background-clip: text;
-    }
-    .hero-copy { max-width: 570px; color: var(--muted); font-size: 1.1rem; line-height: 1.75; }
-    .hero-actions { display: flex; flex-wrap: wrap; gap: 13px; margin-top: 30px; }
-    .hero-note { color: #858ba4; font-size: .83rem; margin-top: 18px; }
-    .visual { position: relative; min-height: 430px; display: grid; place-items: center; }
-    .visual-glow {
-      position: absolute; width: 360px; height: 360px; border-radius: 50%;
-      background: rgba(88,101,242,.27); filter: blur(75px);
-    }
-    .logo-stage {
-      position: relative; width: min(100%, 430px); aspect-ratio: 1;
-      display: grid; place-items: center;
-      border: 1px solid rgba(199, 205, 255, .17);
-      border-radius: 32px;
-      background: linear-gradient(145deg, rgba(37, 43, 76, .78), rgba(18, 20, 34, .9));
-      box-shadow: 0 30px 90px rgba(0,0,0,.36), inset 0 1px 0 rgba(255,255,255,.08);
-      transform: rotate(2deg);
-    }
-    .logo-stage::before, .logo-stage::after {
-      content: ""; position: absolute; border: 1px solid rgba(172, 183, 255, .13); border-radius: 28px; inset: 18px;
-    }
-    .logo-stage::after { inset: 36px; border-radius: 24px; border-color: rgba(172, 183, 255, .08); }
-    .logo-stage img { position: relative; z-index: 1; width: 74%; height: 74%; object-fit: contain; filter: drop-shadow(0 18px 40px rgba(70, 88, 255, .32)); }
-    .floating-tag {
-      position: absolute; z-index: 2; display: flex; align-items: center; gap: 10px;
-      padding: 11px 14px; border: 1px solid var(--line); border-radius: 14px;
-      background: rgba(25, 28, 43, .9); color: #e8eaff; font-size: .83rem; font-weight: 700;
-      box-shadow: 0 14px 40px rgba(0,0,0,.28); backdrop-filter: blur(12px);
-    }
-    .tag-one { top: 12%; left: -2%; }
-    .tag-two { right: -3%; bottom: 13%; }
-    .tag-icon { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 9px; background: rgba(88,101,242,.2); color: #aeb8ff; }
-    .section { padding: 92px 0; }
-    .section-head { max-width: 670px; margin: 0 auto 42px; text-align: center; }
-    .kicker { color: #aab4ff; font-size: .77rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
-    h2 { margin: 9px 0 12px; font-size: clamp(2rem, 4vw, 3.25rem); line-height: 1.1; letter-spacing: -.055em; }
-    .section-head p { margin: 0; color: var(--muted); }
-    .features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-    .feature {
-      min-height: 218px; padding: 25px; border: 1px solid var(--line); border-radius: var(--radius);
-      background: linear-gradient(145deg, rgba(31, 35, 54, .9), rgba(23, 26, 40, .9));
-      transition: transform .2s ease, border-color .2s ease, background .2s ease;
-    }
-    .feature:hover { transform: translateY(-5px); border-color: rgba(132,146,255,.38); background: linear-gradient(145deg, #252a43, #191c2c); }
-    .feature-icon {
-      width: 43px; height: 43px; display: grid; place-items: center; margin-bottom: 20px;
-      color: #c8ceff; border-radius: 13px; background: rgba(88,101,242,.16);
-    }
-    .feature-icon svg { width: 21px; height: 21px; }
-    .feature h3 { margin: 0 0 8px; font-size: 1.08rem; letter-spacing: -.025em; }
-    .feature p { margin: 0; color: var(--muted); font-size: .91rem; }
-    .install-section { background: linear-gradient(180deg, rgba(25,28,43,.1), rgba(28,32,53,.62), rgba(25,28,43,.1)); }
-    .install-card {
-      max-width: 850px; margin: 0 auto; padding: 28px;
-      border: 1px solid var(--line); border-radius: 24px; background: rgba(18,20,32,.78);
-      box-shadow: 0 24px 70px rgba(0,0,0,.2);
-    }
-    .install-title { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 22px; }
-    .step {
-      flex: 0 0 38px; height: 38px; display: grid; place-items: center; border-radius: 12px;
-      background: linear-gradient(135deg, #6b79ff, #4f5de2); font-weight: 850;
-    }
-    .install-title h3 { margin: 0 0 4px; font-size: 1.15rem; }
-    .install-title p { margin: 0; color: var(--muted); font-size: .9rem; }
-    .command {
-      display: flex; align-items: center; justify-content: space-between; gap: 16px;
-      padding: 15px 16px; border: 1px solid rgba(165,176,255,.14); border-radius: 13px;
-      background: #0b0d16;
-    }
-    .command code { color: #cbd2ff; font: 500 .86rem/1.6 ui-monospace, SFMono-Regular, Consolas, monospace; overflow-wrap: anywhere; }
-    .copy {
-      flex: 0 0 auto; border: 1px solid var(--line); background: #1b1f30; color: white;
-      border-radius: 9px; padding: 8px 11px; cursor: pointer; font-size: .8rem; font-weight: 700;
-    }
-    .copy:hover { background: #292f49; }
-    .install-foot { display: flex; justify-content: space-between; align-items: center; gap: 18px; margin-top: 18px; color: #858ba4; font-size: .83rem; }
-    .install-foot a { color: #c3caff; font-weight: 700; }
-    .faq { display: grid; gap: 10px; max-width: 820px; margin: 0 auto; }
-    details { padding: 19px 21px; border: 1px solid var(--line); border-radius: 15px; background: rgba(25,28,43,.75); }
-    summary { display: flex; justify-content: space-between; align-items: center; gap: 20px; cursor: pointer; list-style: none; font-weight: 700; }
-    summary::-webkit-details-marker { display: none; }
-    summary::after { content: "+"; color: #aeb8ff; font-size: 1.3rem; }
-    details[open] summary::after { content: "−"; }
-    details p { margin: 12px 0 0; color: var(--muted); font-size: .92rem; }
-    .final-cta { padding: 76px 24px; text-align: center; border: 1px solid var(--line); border-radius: 28px; background: radial-gradient(ellipse at 50% 0%, rgba(88,101,242,.24), transparent 65%), #171a29; }
-    .final-cta p { color: var(--muted); margin: 0 auto 25px; }
-    footer { padding: 34px 0; border-top: 1px solid rgba(188,197,255,.09); color: #9299b1; font-size: .85rem; }
-    .footer-row { display: flex; align-items: center; justify-content: space-between; gap: 20px; }
-    .footer-brand { display: flex; align-items: center; gap: 10px; }
-    .footer-brand img { width: 27px; height: 27px; object-fit: contain; border-radius: 50%; }
-    .footer-links { display: flex; gap: 22px; }
-    .hidden { display: none !important; }
+      * {
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        margin: 0;
+        color: var(--text);
+        background:
+          radial-gradient(
+            ellipse at 78% 8%,
+            rgba(88, 101, 242, 0.15),
+            transparent 35rem
+          ),
+          radial-gradient(
+            ellipse at 5% 40%,
+            rgba(111, 125, 255, 0.08),
+            transparent 34rem
+          ),
+          var(--bg);
+        line-height: 1.6;
+      }
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+      button {
+        font: inherit;
+      }
+      .container {
+        width: min(1120px, calc(100% - 40px));
+        margin-inline: auto;
+      }
+      .topbar {
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        background: rgba(12, 14, 23, 0.78);
+        border-bottom: 1px solid rgba(188, 197, 255, 0.08);
+        backdrop-filter: blur(18px);
+      }
+      .nav {
+        min-height: 76px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 24px;
+      }
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 11px;
+        font-weight: 800;
+        letter-spacing: -0.04em;
+        font-size: 1.15rem;
+      }
+      .brand img {
+        width: 39px;
+        height: 39px;
+        object-fit: contain;
+        border-radius: 50%;
+      }
+      .nav-links {
+        display: flex;
+        align-items: center;
+        gap: 30px;
+        color: var(--muted);
+        font-size: 0.91rem;
+        font-weight: 600;
+      }
+      .nav-links a:hover,
+      .footer-links a:hover {
+        color: white;
+      }
+      .nav-cta,
+      .button {
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        border: 1px solid transparent;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #6574ff, #4d5be0);
+        color: white;
+        padding: 12px 19px;
+        font-weight: 750;
+        box-shadow: 0 9px 28px rgba(77, 91, 224, 0.24);
+        transition:
+          transform 0.2s ease,
+          filter 0.2s ease,
+          box-shadow 0.2s ease;
+        cursor: pointer;
+      }
+      .nav-cta {
+        padding: 10px 16px;
+        border-radius: 11px;
+        font-size: 0.9rem;
+      }
+      .button:hover,
+      .nav-cta:hover {
+        transform: translateY(-2px);
+        filter: brightness(1.08);
+        box-shadow: 0 13px 34px rgba(77, 91, 224, 0.35);
+      }
+      .button.secondary {
+        background: rgba(255, 255, 255, 0.045);
+        border-color: var(--line);
+        color: var(--text);
+        box-shadow: none;
+      }
+      .button.secondary:hover {
+        background: rgba(255, 255, 255, 0.08);
+      }
+      .hero {
+        padding: 94px 0 90px;
+        overflow: hidden;
+      }
+      .hero-grid {
+        display: grid;
+        grid-template-columns: 1.02fr 0.98fr;
+        gap: 54px;
+        align-items: center;
+      }
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 9px;
+        padding: 7px 12px;
+        border: 1px solid rgba(158, 169, 255, 0.18);
+        background: rgba(88, 101, 242, 0.1);
+        color: #dce0ff;
+        border-radius: 999px;
+        font-size: 0.79rem;
+        font-weight: 700;
+      }
+      .status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--green);
+        box-shadow: 0 0 12px rgba(87, 227, 155, 0.7);
+      }
+      h1 {
+        margin: 22px 0 18px;
+        max-width: 680px;
+        font-size: clamp(3rem, 6.5vw, 5.45rem);
+        line-height: 0.99;
+        letter-spacing: -0.075em;
+      }
+      .headline-accent {
+        color: transparent;
+        background: linear-gradient(
+          105deg,
+          #f8f9ff 5%,
+          #bcc5ff 48%,
+          #7888ff 100%
+        );
+        -webkit-background-clip: text;
+        background-clip: text;
+      }
+      .hero-copy {
+        max-width: 570px;
+        color: var(--muted);
+        font-size: 1.1rem;
+        line-height: 1.75;
+      }
+      .hero-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 13px;
+        margin-top: 30px;
+      }
+      .hero-note {
+        color: #858ba4;
+        font-size: 0.83rem;
+        margin-top: 18px;
+      }
+      .visual {
+        position: relative;
+        min-height: 430px;
+        display: grid;
+        place-items: center;
+      }
+      .visual-glow {
+        position: absolute;
+        width: 360px;
+        height: 360px;
+        border-radius: 50%;
+        background: rgba(88, 101, 242, 0.27);
+        filter: blur(75px);
+      }
+      .logo-stage {
+        position: relative;
+        width: min(100%, 430px);
+        aspect-ratio: 1;
+        display: grid;
+        place-items: center;
+        border: 1px solid rgba(199, 205, 255, 0.17);
+        border-radius: 32px;
+        background: linear-gradient(
+          145deg,
+          rgba(37, 43, 76, 0.78),
+          rgba(18, 20, 34, 0.9)
+        );
+        box-shadow:
+          0 30px 90px rgba(0, 0, 0, 0.36),
+          inset 0 1px 0 rgba(255, 255, 255, 0.08);
+        transform: rotate(2deg);
+      }
+      .logo-stage::before,
+      .logo-stage::after {
+        content: "";
+        position: absolute;
+        border: 1px solid rgba(172, 183, 255, 0.13);
+        border-radius: 28px;
+        inset: 18px;
+      }
+      .logo-stage::after {
+        inset: 36px;
+        border-radius: 24px;
+        border-color: rgba(172, 183, 255, 0.08);
+      }
+      .logo-stage img {
+        position: relative;
+        z-index: 1;
+        width: 74%;
+        height: 74%;
+        object-fit: contain;
+        filter: drop-shadow(0 18px 40px rgba(70, 88, 255, 0.32));
+      }
+      .floating-tag {
+        position: absolute;
+        z-index: 2;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 11px 14px;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        background: rgba(25, 28, 43, 0.9);
+        color: #e8eaff;
+        font-size: 0.83rem;
+        font-weight: 700;
+        box-shadow: 0 14px 40px rgba(0, 0, 0, 0.28);
+        backdrop-filter: blur(12px);
+      }
+      .tag-one {
+        top: 12%;
+        left: -2%;
+      }
+      .tag-two {
+        right: -3%;
+        bottom: 13%;
+      }
+      .tag-icon {
+        display: grid;
+        place-items: center;
+        width: 28px;
+        height: 28px;
+        border-radius: 9px;
+        background: rgba(88, 101, 242, 0.2);
+        color: #aeb8ff;
+      }
+      .section {
+        padding: 92px 0;
+      }
+      .section-head {
+        max-width: 670px;
+        margin: 0 auto 42px;
+        text-align: center;
+      }
+      .kicker {
+        color: #aab4ff;
+        font-size: 0.77rem;
+        font-weight: 800;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+      }
+      h2 {
+        margin: 9px 0 12px;
+        font-size: clamp(2rem, 4vw, 3.25rem);
+        line-height: 1.1;
+        letter-spacing: -0.055em;
+      }
+      .section-head p {
+        margin: 0;
+        color: var(--muted);
+      }
+      .features {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+      }
+      .feature {
+        min-height: 218px;
+        padding: 25px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: linear-gradient(
+          145deg,
+          rgba(31, 35, 54, 0.9),
+          rgba(23, 26, 40, 0.9)
+        );
+        transition:
+          transform 0.2s ease,
+          border-color 0.2s ease,
+          background 0.2s ease;
+      }
+      .feature:hover {
+        transform: translateY(-5px);
+        border-color: rgba(132, 146, 255, 0.38);
+        background: linear-gradient(145deg, #252a43, #191c2c);
+      }
+      .feature-icon {
+        width: 43px;
+        height: 43px;
+        display: grid;
+        place-items: center;
+        margin-bottom: 20px;
+        color: #c8ceff;
+        border-radius: 13px;
+        background: rgba(88, 101, 242, 0.16);
+      }
+      .feature-icon svg {
+        width: 21px;
+        height: 21px;
+      }
+      .feature h3 {
+        margin: 0 0 8px;
+        font-size: 1.08rem;
+        letter-spacing: -0.025em;
+      }
+      .feature p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.91rem;
+      }
+      .install-section {
+        background: linear-gradient(
+          180deg,
+          rgba(25, 28, 43, 0.1),
+          rgba(28, 32, 53, 0.62),
+          rgba(25, 28, 43, 0.1)
+        );
+      }
+      .install-card {
+        max-width: 850px;
+        margin: 0 auto;
+        padding: 28px;
+        border: 1px solid var(--line);
+        border-radius: 24px;
+        background: rgba(18, 20, 32, 0.78);
+        box-shadow: 0 24px 70px rgba(0, 0, 0, 0.2);
+      }
+      .install-title {
+        display: flex;
+        align-items: flex-start;
+        gap: 16px;
+        margin-bottom: 22px;
+      }
+      .step {
+        flex: 0 0 38px;
+        height: 38px;
+        display: grid;
+        place-items: center;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #6b79ff, #4f5de2);
+        font-weight: 850;
+      }
+      .install-title h3 {
+        margin: 0 0 4px;
+        font-size: 1.15rem;
+      }
+      .install-title p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+      .command {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 15px 16px;
+        border: 1px solid rgba(165, 176, 255, 0.14);
+        border-radius: 13px;
+        background: #0b0d16;
+      }
+      .command code {
+        color: #cbd2ff;
+        font:
+          500 0.86rem/1.6 ui-monospace,
+          SFMono-Regular,
+          Consolas,
+          monospace;
+        overflow-wrap: anywhere;
+      }
+      .copy {
+        flex: 0 0 auto;
+        border: 1px solid var(--line);
+        background: #1b1f30;
+        color: white;
+        border-radius: 9px;
+        padding: 8px 11px;
+        cursor: pointer;
+        font-size: 0.8rem;
+        font-weight: 700;
+      }
+      .copy:hover {
+        background: #292f49;
+      }
+      .install-foot {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 18px;
+        margin-top: 18px;
+        color: #858ba4;
+        font-size: 0.83rem;
+      }
+      .install-foot a {
+        color: #c3caff;
+        font-weight: 700;
+      }
+      .faq {
+        display: grid;
+        gap: 10px;
+        max-width: 820px;
+        margin: 0 auto;
+      }
+      details {
+        padding: 19px 21px;
+        border: 1px solid var(--line);
+        border-radius: 15px;
+        background: rgba(25, 28, 43, 0.75);
+      }
+      summary {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+        cursor: pointer;
+        list-style: none;
+        font-weight: 700;
+      }
+      summary::-webkit-details-marker {
+        display: none;
+      }
+      summary::after {
+        content: "+";
+        color: #aeb8ff;
+        font-size: 1.3rem;
+      }
+      details[open] summary::after {
+        content: "−";
+      }
+      details p {
+        margin: 12px 0 0;
+        color: var(--muted);
+        font-size: 0.92rem;
+      }
+      .final-cta {
+        padding: 76px 24px;
+        text-align: center;
+        border: 1px solid var(--line);
+        border-radius: 28px;
+        background:
+          radial-gradient(
+            ellipse at 50% 0%,
+            rgba(88, 101, 242, 0.24),
+            transparent 65%
+          ),
+          #171a29;
+      }
+      .final-cta p {
+        color: var(--muted);
+        margin: 0 auto 25px;
+      }
+      footer {
+        padding: 34px 0;
+        border-top: 1px solid rgba(188, 197, 255, 0.09);
+        color: #9299b1;
+        font-size: 0.85rem;
+      }
+      .footer-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+      }
+      .footer-brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .footer-brand img {
+        width: 27px;
+        height: 27px;
+        object-fit: contain;
+        border-radius: 50%;
+      }
+      .footer-links {
+        display: flex;
+        gap: 22px;
+      }
+      .hidden {
+        display: none !important;
+      }
 
-    /* Tela aberta por links no formato /join?room=ID */
-    .join-screen {
-      min-height: 100vh; padding: 28px; display: grid; place-items: center;
-      background: radial-gradient(ellipse at 50% 30%, rgba(88,101,242,.23), transparent 35rem), var(--bg-deep);
-    }
-    .join-card {
-      width: min(100%, 470px); padding: 38px; text-align: center;
-      border: 1px solid var(--line); border-radius: 26px; background: rgba(25,28,43,.88);
-      box-shadow: 0 30px 90px rgba(0,0,0,.4);
-    }
-    .join-logo { width: 112px; height: 112px; object-fit: contain; margin-bottom: 18px; }
-    .join-card h1 { margin: 0 0 12px; font-size: 2.2rem; letter-spacing: -.06em; }
-    .join-card p { color: var(--muted); margin: 0 0 22px; }
-    .room-label { color: #8d95b1; font-size: .76rem; text-transform: uppercase; letter-spacing: .12em; font-weight: 800; }
-    .room-code { margin: 5px 0 24px; padding: 11px; border-radius: 10px; color: #d8ddff; background: #0e101a; font: 700 .93rem ui-monospace, Consolas, monospace; overflow-wrap: anywhere; }
-    @media (max-width: 800px) {
-      .hero-grid { grid-template-columns: 1fr; gap: 30px; text-align: center; }
-      .hero-copy { margin-inline: auto; }
-      .hero-actions { justify-content: center; }
-      .visual { min-height: 360px; }
-      .logo-stage { width: min(82vw, 370px); }
-      .tag-one { left: 0; } .tag-two { right: 0; }
-      .features { grid-template-columns: repeat(2, 1fr); }
-      .nav-links { display: none; }
-      .hero { padding-top: 70px; }
-    }
-    @media (max-width: 540px) {
-      .container { width: min(100% - 28px, 1120px); }
-      .nav { min-height: 66px; }
-      .nav-cta { padding: 9px 12px; }
-      .hero { padding: 58px 0 66px; }
-      .hero-grid { gap: 20px; }
-      .hero-copy { font-size: 1rem; }
-      .hero-actions { flex-direction: column; }
-      .hero-actions .button { width: 100%; }
-      .visual { min-height: 310px; }
-      .logo-stage { width: min(78vw, 310px); border-radius: 25px; }
-      .floating-tag { font-size: .73rem; padding: 8px 10px; }
-      .tag-one { top: 8%; } .tag-two { bottom: 7%; }
-      .section { padding: 68px 0; }
-      .features { grid-template-columns: 1fr; }
-      .feature { min-height: auto; }
-      .install-card { padding: 20px; }
-      .command { align-items: flex-start; }
-      .install-foot, .footer-row { align-items: flex-start; flex-direction: column; }
-      .footer-links { flex-wrap: wrap; gap: 14px; }
-      .join-card { padding: 28px 22px; }
-    }
-  </style>
-</head>
-<body>
-  <div id="landing">
-    <header class="topbar">
-      <nav class="container nav" aria-label="Navegação principal">
-        <a class="brand" href="#" aria-label="Viewcord, início">
-          <img src="viewcord_logo.png" alt="Logo do Viewcord" />
-          <span>Viewcord</span>
-        </a>
-        <div class="nav-links">
-          <a href="#recursos">Recursos</a>
-          <a href="#instalar">Instalação</a>
-          <a href="#faq">FAQ</a>
-        </div>
-        <a class="nav-cta" href="https://github.com/Renannl/Viewcord/releases/latest">Baixar app <span aria-hidden="true">↗</span></a>
-      </nav>
-    </header>
+      /* Tela aberta por links no formato /join?room=ID */
+      .join-screen {
+        min-height: 100vh;
+        padding: 28px;
+        display: grid;
+        place-items: center;
+        background:
+          radial-gradient(
+            ellipse at 50% 30%,
+            rgba(88, 101, 242, 0.23),
+            transparent 35rem
+          ),
+          var(--bg-deep);
+      }
+      .join-card {
+        width: min(100%, 470px);
+        padding: 38px;
+        text-align: center;
+        border: 1px solid var(--line);
+        border-radius: 26px;
+        background: rgba(25, 28, 43, 0.88);
+        box-shadow: 0 30px 90px rgba(0, 0, 0, 0.4);
+      }
+      .join-logo {
+        width: 112px;
+        height: 112px;
+        object-fit: contain;
+        margin-bottom: 18px;
+      }
+      .join-card h1 {
+        margin: 0 0 12px;
+        font-size: 2.2rem;
+        letter-spacing: -0.06em;
+      }
+      .join-card p {
+        color: var(--muted);
+        margin: 0 0 22px;
+      }
+      .room-label {
+        color: #8d95b1;
+        font-size: 0.76rem;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        font-weight: 800;
+      }
+      .room-code {
+        margin: 5px 0 24px;
+        padding: 11px;
+        border-radius: 10px;
+        color: #d8ddff;
+        background: #0e101a;
+        font:
+          700 0.93rem ui-monospace,
+          Consolas,
+          monospace;
+        overflow-wrap: anywhere;
+      }
+      @media (max-width: 800px) {
+        .hero-grid {
+          grid-template-columns: 1fr;
+          gap: 30px;
+          text-align: center;
+        }
+        .hero-copy {
+          margin-inline: auto;
+        }
+        .hero-actions {
+          justify-content: center;
+        }
+        .visual {
+          min-height: 360px;
+        }
+        .logo-stage {
+          width: min(82vw, 370px);
+        }
+        .tag-one {
+          left: 0;
+        }
+        .tag-two {
+          right: 0;
+        }
+        .features {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .nav-links {
+          display: none;
+        }
+        .hero {
+          padding-top: 70px;
+        }
+      }
+      @media (max-width: 540px) {
+        .container {
+          width: min(100% - 28px, 1120px);
+        }
+        .nav {
+          min-height: 66px;
+        }
+        .nav-cta {
+          padding: 9px 12px;
+        }
+        .hero {
+          padding: 58px 0 66px;
+        }
+        .hero-grid {
+          gap: 20px;
+        }
+        .hero-copy {
+          font-size: 1rem;
+        }
+        .hero-actions {
+          flex-direction: column;
+        }
+        .hero-actions .button {
+          width: 100%;
+        }
+        .visual {
+          min-height: 310px;
+        }
+        .logo-stage {
+          width: min(78vw, 310px);
+          border-radius: 25px;
+        }
+        .floating-tag {
+          font-size: 0.73rem;
+          padding: 8px 10px;
+        }
+        .tag-one {
+          top: 8%;
+        }
+        .tag-two {
+          bottom: 7%;
+        }
+        .section {
+          padding: 68px 0;
+        }
+        .features {
+          grid-template-columns: 1fr;
+        }
+        .feature {
+          min-height: auto;
+        }
+        .install-card {
+          padding: 20px;
+        }
+        .command {
+          align-items: flex-start;
+        }
+        .install-foot,
+        .footer-row {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+        .footer-links {
+          flex-wrap: wrap;
+          gap: 14px;
+        }
+        .join-card {
+          padding: 28px 22px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="landing">
+      <header class="topbar">
+        <nav class="container nav" aria-label="Navegação principal">
+          <a class="brand" href="#" aria-label="Viewcord, início">
+            <img src="viewcord_logo.png" alt="Logo do Viewcord" />
+            <span>Viewcord</span>
+          </a>
+          <div class="nav-links">
+            <a href="#recursos">Recursos</a>
+            <a href="#instalar">Instalação</a>
+            <a href="#faq">FAQ</a>
+          </div>
+          <a
+            class="nav-cta"
+            href="https://github.com/Renannl/Viewcord/releases/latest"
+            >Baixar app <span aria-hidden="true">↗</span></a
+          >
+        </nav>
+      </header>
 
-    <main>
-      <section class="hero">
-        <div class="container hero-grid">
-          <div>
-            <div class="eyebrow"><span class="status-dot"></span> Compartilhamento de tela para suas calls</div>
-            <h1>Sua tela.<br /><span class="headline-accent">Sua call. Juntos.</span></h1>
-            <p class="hero-copy">Compartilhe sua tela com amigos enquanto conversa no Discord. O Viewcord deixa a transmissão simples, rápida e a poucos cliques de distância.</p>
-            <div class="hero-actions">
-              <a class="button" href="https://github.com/Renannl/Viewcord/releases/latest">Baixar para Windows <span aria-hidden="true">↓</span></a>
-              <a class="button secondary" href="#instalar">Como instalar</a>
+      <main>
+        <section class="hero">
+          <div class="container hero-grid">
+            <div>
+              <div class="eyebrow">
+                <span class="status-dot"></span> Compartilhamento de tela para
+                suas calls
+              </div>
+              <h1>
+                Sua tela.<br /><span class="headline-accent"
+                  >Sua call. Juntos.</span
+                >
+              </h1>
+              <p class="hero-copy">
+                Compartilhe sua tela com amigos enquanto conversa no Discord. O
+                Viewcord deixa a transmissão simples, rápida e a poucos cliques
+                de distância.
+              </p>
+              <div class="hero-actions">
+                <a
+                  class="button"
+                  href="https://github.com/Renannl/Viewcord/releases/latest"
+                  >Baixar para Windows <span aria-hidden="true">↓</span></a
+                >
+                <a class="button secondary" href="#instalar">Como instalar</a>
+              </div>
+              <p class="hero-note">
+                Gratuito · Código aberto · Feito para Windows
+              </p>
             </div>
-            <p class="hero-note">Gratuito · Código aberto · Feito para Windows</p>
-          </div>
 
-          <div class="visual" aria-label="Logo do Viewcord">
-            <div class="visual-glow"></div>
-            <div class="logo-stage">
-              <img src="viewcord_logo.png" alt="Logo do Viewcord: monitor com sinal de transmissão" />
-            </div>
-            <div class="floating-tag tag-one"><span class="tag-icon">✦</span> Feito para compartilhar</div>
-            <div class="floating-tag tag-two"><span class="tag-icon">◉</span> Conectado ao Discord</div>
-          </div>
-        </div>
-      </section>
-
-      <section class="section" id="recursos">
-        <div class="container">
-          <div class="section-head">
-            <span class="kicker">Feito para a sua call</span>
-            <h2>Compartilhar ficou mais simples.</h2>
-            <p>Abra o Viewcord, escolha o que quer transmitir e convide seus amigos para assistir.</p>
-          </div>
-
-          <div class="features">
-            <article class="feature">
-              <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3h11A2.5 2.5 0 0 1 20 5.5v9a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 14.5z"/><path d="M8 21h8m-4-4v4m4-12-3 3-2-2-3 3"/></svg></div>
-              <h3>Escolha o que transmitir</h3>
-              <p>Selecione uma janela ou sua tela e compartilhe o conteúdo que quiser mostrar.</p>
-            </article>
-            <article class="feature">
-              <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v4m0 10v4M3 12h4m10 0h4"/><circle cx="12" cy="12" r="5"/><path d="m5.6 5.6 2.8 2.8m7.2 7.2 2.8 2.8m0-12.8-2.8 2.8m-7.2 7.2-2.8 2.8"/></svg></div>
-              <h3>Imagem ajustável</h3>
-              <p>Escolha entre as opções de qualidade disponíveis no app para a sua transmissão.</p>
-            </article>
-            <article class="feature">
-              <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 10a4 4 0 1 1 8 0c0 5 2 5 2 7H6c0-2 2-2 2-7Z"/><path d="M10 20h4"/></svg></div>
-              <h3>Presença no Discord</h3>
-              <p>Integração com Rich Presence para indicar que você está usando o Viewcord.</p>
-            </article>
-            <article class="feature">
-              <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6h16M4 12h16M4 18h10"/><circle cx="19" cy="18" r="2"/></svg></div>
-              <h3>Fica na bandeja</h3>
-              <p>Minimize o app para a bandeja do Windows e acesse-o novamente quando precisar.</p>
-            </article>
-            <article class="feature">
-              <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3 4.5 6v5.5c0 4.2 3.1 7.7 7.5 9.5 4.4-1.8 7.5-5.3 7.5-9.5V6z"/><path d="m9 12 2 2 4-4"/></svg></div>
-              <h3>Sem criar conta</h3>
-              <p>Instale e use o aplicativo sem precisar cadastrar uma conta no Viewcord.</p>
-            </article>
-            <article class="feature">
-              <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 8 4 12l4 4m8-8 4 4-4 4m-3-11-2 14"/></svg></div>
-              <h3>Código aberto</h3>
-              <p>Consulte o projeto no GitHub, reporte problemas ou contribua com melhorias.</p>
-            </article>
-          </div>
-        </div>
-      </section>
-
-      <section class="section install-section" id="instalar">
-        <div class="container">
-          <div class="section-head">
-            <span class="kicker">Comece em poucos passos</span>
-            <h2>Instale o Viewcord.</h2>
-            <p>Use o instalador automático ou baixe a versão mais recente pelo GitHub.</p>
-          </div>
-          <div class="install-card">
-            <div class="install-title">
-              <div class="step">1</div>
-              <div>
-                <h3>Instalação automática</h3>
-                <p>Abra o PowerShell, cole este comando e pressione Enter.</p>
+            <div class="visual" aria-label="Logo do Viewcord">
+              <div class="visual-glow"></div>
+              <div class="logo-stage">
+                <img
+                  src="viewcord_logo.png"
+                  alt="Logo do Viewcord: monitor com sinal de transmissão"
+                />
+              </div>
+              <div class="floating-tag tag-one">
+                <span class="tag-icon">✦</span> Feito para compartilhar
+              </div>
+              <div class="floating-tag tag-two">
+                <span class="tag-icon">◉</span> Conectado ao Discord
               </div>
             </div>
-            <div class="command">
-              <code id="install-command">iwr -useb https://raw.githubusercontent.com/Renannl/Viewcord/main/install.ps1 | iex</code>
-              <button class="copy" id="copy-button" type="button">Copiar</button>
+          </div>
+        </section>
+
+        <section class="section" id="recursos">
+          <div class="container">
+            <div class="section-head">
+              <span class="kicker">Feito para a sua call</span>
+              <h2>Compartilhar ficou mais simples.</h2>
+              <p>
+                Abra o Viewcord, escolha o que quer transmitir e convide seus
+                amigos para assistir.
+              </p>
             </div>
-            <div class="install-foot">
-              <span>O script baixa e instala a versão mais recente.</span>
-              <a href="https://github.com/Renannl/Viewcord/releases/latest">Ou baixe manualmente ↗</a>
+
+            <div class="features">
+              <article class="feature">
+                <div class="feature-icon">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                  >
+                    <path
+                      d="M4 5.5A2.5 2.5 0 0 1 6.5 3h11A2.5 2.5 0 0 1 20 5.5v9a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 14.5z"
+                    />
+                    <path d="M8 21h8m-4-4v4m4-12-3 3-2-2-3 3" />
+                  </svg>
+                </div>
+                <h3>Escolha o que transmitir</h3>
+                <p>
+                  Selecione uma janela ou sua tela e compartilhe o conteúdo que
+                  quiser mostrar.
+                </p>
+              </article>
+              <article class="feature">
+                <div class="feature-icon">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                  >
+                    <path d="M12 3v4m0 10v4M3 12h4m10 0h4" />
+                    <circle cx="12" cy="12" r="5" />
+                    <path
+                      d="m5.6 5.6 2.8 2.8m7.2 7.2 2.8 2.8m0-12.8-2.8 2.8m-7.2 7.2-2.8 2.8"
+                    />
+                  </svg>
+                </div>
+                <h3>Imagem ajustável</h3>
+                <p>
+                  Escolha entre as opções de qualidade disponíveis no app para a
+                  sua transmissão.
+                </p>
+              </article>
+              <article class="feature">
+                <div class="feature-icon">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                  >
+                    <path d="M8 10a4 4 0 1 1 8 0c0 5 2 5 2 7H6c0-2 2-2 2-7Z" />
+                    <path d="M10 20h4" />
+                  </svg>
+                </div>
+                <h3>Presença no Discord</h3>
+                <p>
+                  Integração com Rich Presence para indicar que você está usando
+                  o Viewcord.
+                </p>
+              </article>
+              <article class="feature">
+                <div class="feature-icon">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                  >
+                    <path d="M4 6h16M4 12h16M4 18h10" />
+                    <circle cx="19" cy="18" r="2" />
+                  </svg>
+                </div>
+                <h3>Fica na bandeja</h3>
+                <p>
+                  Minimize o app para a bandeja do Windows e acesse-o novamente
+                  quando precisar.
+                </p>
+              </article>
+              <article class="feature">
+                <div class="feature-icon">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                  >
+                    <path
+                      d="M12 3 4.5 6v5.5c0 4.2 3.1 7.7 7.5 9.5 4.4-1.8 7.5-5.3 7.5-9.5V6z"
+                    />
+                    <path d="m9 12 2 2 4-4" />
+                  </svg>
+                </div>
+                <h3>Sem criar conta</h3>
+                <p>
+                  Instale e use o aplicativo sem precisar cadastrar uma conta no
+                  Viewcord.
+                </p>
+              </article>
+              <article class="feature">
+                <div class="feature-icon">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                  >
+                    <path d="M8 8 4 12l4 4m8-8 4 4-4 4m-3-11-2 14" />
+                  </svg>
+                </div>
+                <h3>Código aberto</h3>
+                <p>
+                  Consulte o projeto no GitHub, reporte problemas ou contribua
+                  com melhorias.
+                </p>
+              </article>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <section class="section" id="faq">
-        <div class="container">
-          <div class="section-head">
-            <span class="kicker">Dúvidas comuns</span>
-            <h2>Perguntas frequentes.</h2>
+        <section class="section install-section" id="instalar">
+          <div class="container">
+            <div class="section-head">
+              <span class="kicker">Comece em poucos passos</span>
+              <h2>Instale o Viewcord.</h2>
+              <p>
+                Use o instalador automático ou baixe a versão mais recente pelo
+                GitHub.
+              </p>
+            </div>
+            <div class="install-card">
+              <div class="install-title">
+                <div class="step">1</div>
+                <div>
+                  <h3>Instalação automática</h3>
+                  <p>Abra o PowerShell, cole este comando e pressione Enter.</p>
+                </div>
+              </div>
+              <div class="command">
+                <code id="install-command"
+                  >iwr -useb
+                  https://raw.githubusercontent.com/Renannl/Viewcord/main/install.ps1
+                  | iex</code
+                >
+                <button class="copy" id="copy-button" type="button">
+                  Copiar
+                </button>
+              </div>
+              <div class="install-foot">
+                <span>O script baixa e instala a versão mais recente.</span>
+                <a href="https://github.com/Renannl/Viewcord/releases/latest"
+                  >Ou baixe manualmente ↗</a
+                >
+              </div>
+            </div>
           </div>
-          <div class="faq">
-            <details>
-              <summary>O Viewcord substitui a call do Discord?</summary>
-              <p>Não. O Viewcord é usado para compartilhar a tela; você pode continuar conversando na call do Discord.</p>
-            </details>
-            <details>
-              <summary>Em quais sistemas funciona?</summary>
-              <p>O instalador disponibilizado atualmente é para Windows.</p>
-            </details>
-            <details>
-              <summary>O app é gratuito?</summary>
-              <p>Sim. O projeto é gratuito e o código está disponível no GitHub.</p>
-            </details>
-            <details>
-              <summary>Como reporto um problema?</summary>
-              <p>Abra uma issue no repositório do Viewcord no GitHub e descreva o que aconteceu.</p>
-            </details>
+        </section>
+
+        <section class="section" id="faq">
+          <div class="container">
+            <div class="section-head">
+              <span class="kicker">Dúvidas comuns</span>
+              <h2>Perguntas frequentes.</h2>
+            </div>
+            <div class="faq">
+              <details>
+                <summary>O Viewcord substitui a call do Discord?</summary>
+                <p>
+                  Não. O Viewcord é usado para compartilhar a tela; você pode
+                  continuar conversando na call do Discord.
+                </p>
+              </details>
+              <details>
+                <summary>Em quais sistemas funciona?</summary>
+                <p>O instalador disponibilizado atualmente é para Windows.</p>
+              </details>
+              <details>
+                <summary>O app é gratuito?</summary>
+                <p>
+                  Sim. O projeto é gratuito e o código está disponível no
+                  GitHub.
+                </p>
+              </details>
+              <details>
+                <summary>Como reporto um problema?</summary>
+                <p>
+                  Abra uma issue no repositório do Viewcord no GitHub e descreva
+                  o que aconteceu.
+                </p>
+              </details>
+            </div>
+          </div>
+        </section>
+
+        <section class="section">
+          <div class="container">
+            <div class="final-cta">
+              <span class="kicker">Sua próxima call começa aqui</span>
+              <h2>Compartilhe o que você está vendo.</h2>
+              <p>Baixe o Viewcord e convide seus amigos para assistir.</p>
+              <a
+                class="button"
+                href="https://github.com/Renannl/Viewcord/releases/latest"
+                >Baixar Viewcord <span aria-hidden="true">↗</span></a
+              >
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer>
+        <div class="container footer-row">
+          <div class="footer-brand">
+            <img src="viewcord_logo.png" alt="" />
+            <span>© 2026 Viewcord · Projeto open source</span>
+          </div>
+          <div class="footer-links">
+            <a href="https://github.com/Renannl/Viewcord">GitHub</a>
+            <a href="https://github.com/Renannl/Viewcord/issues"
+              >Reportar problema</a
+            >
+            <a href="https://github.com/Renannl/Viewcord/releases">Releases</a>
           </div>
         </div>
-      </section>
-
-      <section class="section">
-        <div class="container">
-          <div class="final-cta">
-            <span class="kicker">Sua próxima call começa aqui</span>
-            <h2>Compartilhe o que você está vendo.</h2>
-            <p>Baixe o Viewcord e convide seus amigos para assistir.</p>
-            <a class="button" href="https://github.com/Renannl/Viewcord/releases/latest">Baixar Viewcord <span aria-hidden="true">↗</span></a>
-          </div>
-        </div>
-      </section>
-    </main>
-
-    <footer>
-      <div class="container footer-row">
-        <div class="footer-brand">
-          <img src="viewcord_logo.png" alt="" />
-          <span>© 2026 Viewcord · Projeto open source</span>
-        </div>
-        <div class="footer-links">
-          <a href="https://github.com/Renannl/Viewcord">GitHub</a>
-          <a href="https://github.com/Renannl/Viewcord/issues">Reportar problema</a>
-          <a href="https://github.com/Renannl/Viewcord/releases">Releases</a>
-        </div>
-      </div>
-    </footer>
-  </div>
-
-  <section class="join-screen hidden" id="join-screen">
-    <div class="join-card">
-      <img class="join-logo" src="viewcord_logo.png" alt="Logo do Viewcord" />
-      <h1>Abrindo o Viewcord</h1>
-      <p>Se o aplicativo não abrir automaticamente, use o botão abaixo.</p>
-      <div class="room-label">Código da sala</div>
-      <div class="room-code" id="room-code">---</div>
-      <a class="button" id="open-app" href="#">Abrir Viewcord</a>
+      </footer>
     </div>
-  </section>
 
-  <script>
-    const roomId = new URLSearchParams(window.location.search).get("room");
+    <section class="join-screen hidden" id="join-screen">
+      <div class="join-card">
+        <img class="join-logo" src="viewcord_logo.png" alt="Logo do Viewcord" />
+        <h1>Abrindo o Viewcord</h1>
+        <p>Se o aplicativo não abrir automaticamente, use o botão abaixo.</p>
+        <div class="room-label">Código da sala</div>
+        <div class="room-code" id="room-code">---</div>
+        <a class="button" id="open-app" href="#">Abrir Viewcord</a>
+      </div>
+    </section>
 
-    if (roomId) {
-      document.getElementById("landing").classList.add("hidden");
-      document.getElementById("join-screen").classList.remove("hidden");
-      document.getElementById("room-code").textContent = roomId;
-      const appUrl = `viewcord://room=${encodeURIComponent(roomId)}`;
-      document.getElementById("open-app").href = appUrl;
-      window.location.href = appUrl;
-    }
+    <script>
+      const roomId = new URLSearchParams(window.location.search).get("room");
 
-    const copyButton = document.getElementById("copy-button");
-    copyButton.addEventListener("click", async () => {
-      const command = document.getElementById("install-command").textContent;
-      try {
-        await navigator.clipboard.writeText(command);
-        copyButton.textContent = "Copiado!";
-        setTimeout(() => { copyButton.textContent = "Copiar"; }, 1600);
-      } catch {
-        copyButton.textContent = "Selecione e copie";
-        setTimeout(() => { copyButton.textContent = "Copiar"; }, 1800);
+      if (roomId) {
+        document.getElementById("landing").classList.add("hidden");
+        document.getElementById("join-screen").classList.remove("hidden");
+        document.getElementById("room-code").textContent = roomId;
+        const appUrl = `viewcord://room=${encodeURIComponent(roomId)}`;
+        document.getElementById("open-app").href = appUrl;
+        window.location.href = appUrl;
       }
-    });
-  </script>
-</body>
+
+      const copyButton = document.getElementById("copy-button");
+      copyButton.addEventListener("click", async () => {
+        const command = document.getElementById("install-command").textContent;
+        try {
+          await navigator.clipboard.writeText(command);
+          copyButton.textContent = "Copiado!";
+          setTimeout(() => {
+            copyButton.textContent = "Copiar";
+          }, 1600);
+        } catch {
+          copyButton.textContent = "Selecione e copie";
+          setTimeout(() => {
+            copyButton.textContent = "Copiar";
+          }, 1800);
+        }
+      });
+    </script>
+  </body>
 </html>
